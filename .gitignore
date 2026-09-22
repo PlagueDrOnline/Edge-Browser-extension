@@ -1,0 +1,11 @@
+# private signing key for Plague Doctor Pro licenses — never commit
+tools/.secrets/
+
+# build output
+dist/
+
+# tooling
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db

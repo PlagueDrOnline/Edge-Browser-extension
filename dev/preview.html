@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- DEV ONLY — open via a static server from the repo root, e.g.
+       python3 -m http.server 8000   →   http://localhost:8000/dev/preview.html
+     Renders popup.html with a fake chrome API so the UI can be designed without
+     reloading the unpacked extension. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plague Doctor Controller Mapper — popup preview</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: 300px 1fr; font: 14px/1.5 "Segoe UI", system-ui, sans-serif; color: #e7e9ee; background: #05070a; }
+    aside { padding: 22px 20px; border-right: 1px solid #1c2129; background: #0b0d10; }
+    h1 { font-size: 15px; margin: 0 0 4px; letter-spacing: .04em; text-transform: uppercase; color: #ef233c; }
+    p { margin: 0 0 14px; color: #8f98a6; font-size: 13px; }
+    h2 { font-size: 12px; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: .1em; color: #66707f; }
+    button, label { display: block; width: 100%; text-align: left; margin: 0 0 6px; padding: 8px 10px; border-radius: 8px; border: 1px solid #364050; background: #161a20; color: #e7e9ee; font: inherit; cursor: pointer; }
+    button:hover { border-color: #19e6c1; }
+    .pad { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .pad button { margin: 0; text-align: center; font-family: ui-monospace, monospace; }
+    label { display: flex; align-items: center; gap: 8px; }
+    main { display: grid; place-items: center; padding: 30px; background: radial-gradient(60% 60% at 50% 40%, #12161c 0%, #05070a 70%); }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .stage span { font-size: 12px; color: #66707f; }
+    iframe { width: 380px; height: 600px; border: 0; border-radius: 10px; background: #0b0d10; box-shadow: 0 30px 80px -30px rgba(0,0,0,.9), 0 0 0 1px #262c36; }
+    .tall iframe { height: 1150px; }
+    code { font-family: ui-monospace, monospace; color: #d4a53a; }
+  </style>
+</head>
+<body>
+  <aside>
+    <h1>Popup preview</h1>
+    <p>Dev harness with a fake <code>chrome.*</code> API. The real extension popup is capped at 600px tall and scrolls — toggle "tall frame" to see everything at once.</p>
+
+    <h2>Scenario</h2>
+    <label><input type="checkbox" id="optPro"> Pro license active</label>
+    <label><input type="checkbox" id="optBridge" checked> Content script present in tab</label>
+    <label><input type="checkbox" id="optRestricted"> Restricted page (edge://)</label>
+    <label><input type="checkbox" id="optTall"> Tall frame (no scrolling)</label>
+    <button id="reload">Reload popup with scenario</button>
+
+    <h2>Fake Switch Pro Controller</h2>
+    <p>Physical button presses (Switch labels). Watch “Physical” vs “Game sees” in the Live test card.</p>
+    <div class="pad">
+      <button data-press="3">X (top)</button>
+      <button data-press="1">A (right)</button>
+      <button data-press="2">Y (left)</button>
+      <button data-press="0">B (bottom)</button>
+      <button data-press="9">+ Start</button>
+      <button data-press="12">D-Up</button>
+    </div>
+    <button id="connect" style="margin-top:8px">Connect pad (no press)</button>
+    <button id="disconnect">Disconnect pad</button>
+  </aside>
+  <main>
+    <div class="stage" id="stage">
+      <iframe id="frame" src="frame.html" title="Popup preview"></iframe>
+      <span>380 × 600 — Microsoft Edge action popup</span>
+    </div>
+  </main>
+  <script>
+    const frame = document.getElementById('frame');
+    const $ = (id) => document.getElementById(id);
+    function reload() {
+      const q = new URLSearchParams();
+      if ($('optPro').checked) q.set('pro', '1');
+      if (!$('optBridge').checked) q.set('bridge', '0');
+      if ($('optRestricted').checked) q.set('url', 'edge://extensions/');
+      frame.src = 'frame.html?' + q.toString();
+      $('stage').classList.toggle('tall', $('optTall').checked);
+    }
+    $('reload').addEventListener('click', reload);
+    $('optTall').addEventListener('change', () => $('stage').classList.toggle('tall', $('optTall').checked));
+    document.querySelectorAll('[data-press]').forEach((b) => b.addEventListener('click', () => frame.contentWindow.__pdcmMock?.press(Number(b.dataset.press))));
+    $('connect').addEventListener('click', () => frame.contentWindow.__pdcmMock?.connectPad());
+    $('disconnect').addEventListener('click', () => frame.contentWindow.__pdcmMock?.disconnectPad());
+  </script>
+</body>
+</html>

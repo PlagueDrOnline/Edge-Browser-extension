@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Plague Doctor Controller Mapper</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-pro="false">
+
+  <!-- ───────────────────────── Header / branding ───────────────────────── -->
+  <header class="pd-header">
+    <div class="pd-brand">
+      <div class="pd-logo-frame" aria-hidden="true">
+        <!-- Bundled fallback. popup.js swaps in BRAND.logoUrl (raw GitHub URL) once it loads. -->
+        <img id="brandLogo" class="pd-logo" src="assets/logo.png" alt="" width="46" height="46" decoding="async">
+      </div>
+      <div class="pd-title">
+        <span class="pd-kicker">Plague Doctor</span>
+        <h1>Controller Mapper</h1>
+      </div>
+    </div>
+    <div class="pd-status" id="statusPill" data-state="loading" role="status" aria-live="polite">
+      <span class="pd-status-dot" aria-hidden="true"></span>
+      <span id="statusText">Loading…</span>
+    </div>
+  </header>
+
+  <main class="pd-main">
+
+    <!-- ───────────────────────── Plague Remap (free) ───────────────────────── -->
+    <section class="card card-primary" aria-labelledby="remapTitle">
+      <div class="row row-toggle">
+        <div class="row-text">
+          <h2 id="remapTitle">Plague Remap</h2>
+          <p class="muted">A/B &amp; X/Y inversion — the button printed on your Switch pad becomes the button the game expects.</p>
+        </div>
+        <label class="switch" aria-label="Enable Plague Remap">
+          <input type="checkbox" id="toggleEnabled">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="chips" role="group" aria-label="Swaps">
+        <label class="chip"><input type="checkbox" id="toggleSwapAB"><span><kbd>A</kbd> ↔ <kbd>B</kbd></span></label>
+        <label class="chip"><input type="checkbox" id="toggleSwapXY"><span><kbd>X</kbd> ↔ <kbd>Y</kbd></span></label>
+      </div>
+
+      <div class="row">
+        <span class="label">Apply to</span>
+        <div class="segmented" role="radiogroup" aria-label="Which controllers to remap">
+          <label><input type="radio" name="target" value="switch"><span>Switch pads only</span></label>
+          <label><input type="radio" name="target" value="all"><span>All controllers</span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── This page ───────────────────────── -->
+    <section class="card" aria-labelledby="pageTitle">
+      <div class="card-head">
+        <h2 id="pageTitle">This page</h2>
+        <span class="host" id="siteHost">—</span>
+      </div>
+
+      <div id="pageOk">
+        <div class="row row-toggle compact">
+          <span>Remap on this site</span>
+          <label class="switch small" aria-label="Enable remap on this site">
+            <input type="checkbox" id="toggleSite">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <ul class="diag" id="pageDiag" aria-live="polite"></ul>
+      </div>
+
+      <div id="pageMissing" hidden>
+        <p class="muted" id="pageMissingText">The hook is not running in this tab yet.</p>
+        <button class="btn btn-ghost" type="button" id="btnInject">Activate on this tab</button>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── Live tester ───────────────────────── -->
+    <section class="card" aria-labelledby="testTitle">
+      <div class="card-head">
+        <h2 id="testTitle">Live test</h2>
+        <span class="muted small" id="testerPadName">Press any button on your controller</span>
+      </div>
+      <div class="tester">
+        <div class="facepad" aria-hidden="true">
+          <div class="face face-y" data-out="3"><span class="face-label">Y</span></div>
+          <div class="face face-x" data-out="2"><span class="face-label">X</span></div>
+          <div class="face face-b" data-out="1"><span class="face-label">B</span></div>
+          <div class="face face-a" data-out="0"><span class="face-label">A</span></div>
+        </div>
+        <dl class="tester-info">
+          <div><dt>Physical</dt><dd id="testerPhysical">—</dd></div>
+          <div><dt>Game sees</dt><dd id="testerMapped">—</dd></div>
+          <div class="tester-note muted small" id="testerNote"></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── Plague Doctor Pro ───────────────────────── -->
+    <section class="card card-pro" id="proCard" aria-labelledby="proTitle">
+      <div class="pro-head">
+        <div class="pro-title">
+          <span class="pro-badge">PRO</span>
+          <h2 id="proTitle">Plague Doctor Pro</h2>
+        </div>
+        <span class="pro-price" id="proPrice">$2.99 one-time</span>
+      </div>
+      <ul class="pro-features">
+        <li>Custom button profiles — remap all 17 buttons, import &amp; export</li>
+        <li>Gamepad → keyboard translation with a per-site allow-list</li>
+        <li>Lifetime updates · no subscription · no account</li>
+      </ul>
+
+      <div class="pro-locked" id="proLocked">
+        <a class="btn btn-primary" id="btnBuy" href="#" target="_blank" rel="noopener noreferrer">Get Pro</a>
+        <form class="license-form" id="licenseForm" autocomplete="off">
+          <label class="visually-hidden" for="licenseKey">License key</label>
+          <input type="text" id="licenseKey" placeholder="Paste license key (PDCM.…)" spellcheck="false" autocapitalize="off">
+          <button class="btn btn-ghost" type="submit" id="btnActivate">Activate</button>
+        </form>
+        <p class="form-msg" id="licenseMsg" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="pro-unlocked" id="proUnlocked" hidden>
+        <p><span class="check" aria-hidden="true">✓</span> Pro is active <span class="muted" id="proEmail"></span></p>
+        <button class="link" type="button" id="btnDeactivate">Deactivate on this device</button>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── Pro: button profile ───────────────────────── -->
+    <section class="card pro-feature" id="profileCard" aria-labelledby="profileTitle">
+      <div class="card-head">
+        <h2 id="profileTitle">Button profile</h2>
+        <span class="lock" aria-label="Pro feature">🔒 Pro</span>
+      </div>
+      <fieldset class="pro-body" id="profileBody">
+        <div class="segmented full" role="radiogroup" aria-label="Profile mode">
+          <label><input type="radio" name="profileMode" value="default"><span>Plague default</span></label>
+          <label><input type="radio" name="profileMode" value="custom"><span>Custom profile</span></label>
+        </div>
+
+        <details id="profileEditor">
+          <summary>Edit button matrix</summary>
+          <p class="muted small">Left column: what the game reads. Right column: the physical button that feeds it.</p>
+          <div class="matrix" id="profileMatrix"></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost small" type="button" id="btnProfileSwitch">Reset to Switch swap</button>
+            <button class="btn btn-ghost small" type="button" id="btnProfileIdentity">Identity (no remap)</button>
+          </div>
+        </details>
+
+        <details>
+          <summary>Import / export profile</summary>
+          <label class="visually-hidden" for="profileJson">Profile JSON</label>
+          <textarea id="profileJson" rows="4" spellcheck="false" placeholder='{"pdcmProfile":1,"name":"My game","map":[1,0,3,2,…]}'></textarea>
+          <div class="btn-row">
+            <button class="btn btn-ghost small" type="button" id="btnExport">Export</button>
+            <button class="btn btn-ghost small" type="button" id="btnCopy">Copy</button>
+            <button class="btn btn-ghost small" type="button" id="btnImport">Import</button>
+          </div>
+          <p class="form-msg" id="profileMsg" role="status"></p>
+        </details>
+      </fieldset>
+      <button class="pro-veil" type="button" data-unlock>🔒 Unlock with Plague Doctor Pro</button>
+    </section>
+
+    <!-- ───────────────────────── Pro: keyboard translation ───────────────────────── -->
+    <section class="card pro-feature" id="keyboardCard" aria-labelledby="kbTitle">
+      <div class="card-head">
+        <h2 id="kbTitle">Keyboard translation</h2>
+        <label class="switch small" aria-label="Enable keyboard translation">
+          <input type="checkbox" id="toggleKeyboard">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <fieldset class="pro-body" id="keyboardBody">
+        <p class="muted small">Turns controller input into key presses for games that only listen to the keyboard. Bindings use the remapped labels (what the game sees).</p>
+
+        <div class="row">
+          <span class="label">Where</span>
+          <div class="segmented" role="radiogroup" aria-label="Keyboard translation scope">
+            <label><input type="radio" name="kbScope" value="sites"><span>Allowed sites</span></label>
+            <label><input type="radio" name="kbScope" value="all"><span>Every site</span></label>
+          </div>
+        </div>
+
+        <div class="row row-toggle compact" id="kbSiteRow">
+          <span>Allow on <b id="kbSiteHost">this site</b></span>
+          <label class="switch small" aria-label="Allow keyboard translation on this site">
+            <input type="checkbox" id="toggleKbSite">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="chips">
+          <label class="chip"><input type="checkbox" id="toggleDpadArrows"><span>D-pad → Arrow keys</span></label>
+        </div>
+
+        <div class="row">
+          <span class="label">Left stick</span>
+          <div class="segmented" role="radiogroup" aria-label="Left stick mapping">
+            <label><input type="radio" name="leftStick" value="none"><span>Off</span></label>
+            <label><input type="radio" name="leftStick" value="arrows"><span>Arrows</span></label>
+            <label><input type="radio" name="leftStick" value="wasd"><span>WASD</span></label>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="label" for="deadzone">Deadzone</label>
+          <input type="range" id="deadzone" min="0.1" max="0.95" step="0.05">
+          <span class="value" id="deadzoneValue">0.50</span>
+        </div>
+
+        <div class="bindings" id="bindings" aria-live="polite"></div>
+        <button class="btn btn-ghost small" type="button" id="btnAddBinding">+ Add key binding</button>
+      </fieldset>
+      <button class="pro-veil" type="button" data-unlock>🔒 Unlock with Plague Doctor Pro</button>
+    </section>
+
+  </main>
+
+  <footer class="pd-footer">
+    <span id="versionLabel">v1.0.0</span>
+    <nav aria-label="Links">
+      <a id="linkGithub" href="#" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a id="linkPrivacy" href="#" target="_blank" rel="noopener noreferrer">Privacy</a>
+      <a id="linkSupport" href="#" target="_blank" rel="noopener noreferrer">Support</a>
+    </nav>
+  </footer>
+
+  <script src="lib/shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

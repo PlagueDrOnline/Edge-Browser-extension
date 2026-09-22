@@ -1,0 +1,28 @@
+<!doctype html>
+<!-- DEV ONLY — hosts popup.html inside dev/preview.html with a fake chrome API. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <base href="../">
+  <title>Popup preview frame</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="dev/mock-chrome.js"></script>
+</head>
+<body data-pro="false">
+  <script>
+    (async () => {
+      const html = await (await fetch('popup.html')).text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      document.body.dataset.pro = doc.body.dataset.pro || 'false';
+      document.body.append(...Array.from(doc.body.children).filter((el) => el.tagName !== 'SCRIPT'));
+      for (const src of ['lib/shared.js', 'popup.js']) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = src; s.onload = resolve; s.onerror = reject;
+          document.body.appendChild(s);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
