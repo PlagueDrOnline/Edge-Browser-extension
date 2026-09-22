@@ -54,6 +54,6 @@
   ],
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'none'; img-src 'self' data: https://raw.githubusercontent.com; connect-src 'self';"
+    "extension_pages": "script-src 'self'; object-src 'none'; img-src 'self' data: https://curedhosting.com; connect-src 'self';"
   }
 }

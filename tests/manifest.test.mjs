@@ -70,3 +70,17 @@ test('the Switch id pattern in content.js matches the shared one', () => {
   const channel = (src) => /(?:CHANNEL|PAGE_CHANNEL) = '([^']+)'/.exec(src)[1];
   assert.equal(channel(content), channel(shared));
 });
+
+test('the hosted logo origin (popup.js BRAND.logoUrl) is allowed by the manifest CSP img-src', () => {
+  const popupJs = readFileSync(path.join(root, 'popup.js'), 'utf8');
+  const m = /logoUrl:\s*'([^']+)'/.exec(popupJs);
+  assert.ok(m, 'BRAND.logoUrl present');
+  const origin = new URL(m[1]).origin;
+  assert.equal(origin, 'https://curedhosting.com');
+  const csp = manifest.content_security_policy.extension_pages;
+  const imgSrc = /img-src([^;]*)/.exec(csp)[1];
+  assert.ok(imgSrc.split(/\s+/).includes(origin), `img-src must include ${origin} (is:${imgSrc})`);
+  const styles = readFileSync(path.join(root, 'styles.css'), 'utf8');
+  assert.match(styles, /--logo-focus-x/);
+  assert.match(styles, /--brand-mark-url: url\("assets\/logo-mark.png"\)/);
+});

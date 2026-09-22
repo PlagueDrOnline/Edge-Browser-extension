@@ -20,9 +20,10 @@ inside your browser. It is designed to work entirely on your device.
   extension to a remote license provider, the key you enter is sent to that
   provider only when you press "Activate" (and periodically to re-validate);
   this document and the store listing will say so explicitly.
-- The popup may load the project logo from a GitHub URL. That request carries
-  no personal data beyond what any image request contains (your IP address to
-  GitHub's CDN).
+- The popup loads the project logo from `https://curedhosting.com/plague_logo.png`
+  (the maintainer's own server). That request carries no personal data beyond
+  what any image request contains (your IP address and browser user agent), and
+  a bundled copy is used if it is unavailable.
 
 ## What the extension does not do
 

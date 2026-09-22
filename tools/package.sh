@@ -5,7 +5,7 @@
 #   ./tools/package.sh            -> dist/plague-doctor-controller-mapper-<version>.zip
 #
 # Windows (PowerShell) equivalent:
-#   Compress-Archive -Path manifest.json,background.js,content.js,bridge.js,popup.html,popup.js,styles.css,lib,icons,assets\logo.png -DestinationPath dist\pdcm.zip
+#   Compress-Archive -Path manifest.json,background.js,content.js,bridge.js,popup.html,popup.js,styles.css,lib,icons,assets\logo.png,assets\logo-mark.png -DestinationPath dist\pdcm.zip
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -27,6 +27,7 @@ zip -r -X "$OUT" \
   lib/shared.js \
   lib/license.js \
   icons/icon16.png icons/icon32.png icons/icon48.png icons/icon128.png \
-  assets/logo.png
+  assets/logo.png \
+  assets/logo-mark.png
 
 echo "Packaged ${OUT} ($(du -h "$OUT" | cut -f1))"

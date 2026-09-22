@@ -50,7 +50,8 @@ Edge-Browser-extension/
 │   └── license.js           Offline ECDSA license keys (sign / verify) — WebCrypto, runs in SW & Node
 ├── icons/                   16 / 32 / 48 / 128 px toolbar icons
 ├── assets/
-│   ├── logo.png             Transparent logo used by the popup (bundled fallback for the remote URL)
+│   ├── logo.png             Popup header badge (bundled fallback for the hosted logo)
+│   ├── logo-mark.png        Transparent mark for watermarks
 │   └── logo-master.png      Source crop used to regenerate icons
 ├── store/
 │   └── listing-logo-300.png Store listing logo (Edge Add-ons / Chrome Web Store)
@@ -115,16 +116,18 @@ Requires Chromium 111+ (the manifest declares `minimum_chrome_version`).
 
 ## Branding
 
-* Logo: the popup shows the bundled `assets/logo.png` immediately and swaps in
-  `BRAND.logoUrl` from `popup.js` once it loads. The placeholder is
-  `https://raw.githubusercontent.com/[YOUR-GITHUB-USERNAME]/[YOUR-REPO]/main/logo.png`
-  — for this repository that becomes
-  `https://raw.githubusercontent.com/PlagueDrOnline/Edge-Browser-extension/main/plague_logo.png`.
-  The same URL feeds the CSS variable `--brand-logo-url` (header & Pro-card watermark).
-  If you host the logo somewhere other than `raw.githubusercontent.com`, add that
-  origin to `img-src` in the manifest CSP.
+* **Logo:** the popup header loads `https://curedhosting.com/plague_logo.png`
+  (`BRAND.logoUrl` in `popup.js`) and shows the bundled `assets/logo.png` badge
+  until it arrives — or permanently if the server is unreachable. Because the
+  artwork is 1024×1024 with the character on the left, `styles.css` crops it to
+  the same circular badge with `--logo-focus-x / --logo-focus-y / --logo-zoom`;
+  the bundled badge is pre-rendered with identical numbers by
+  `tools/make-icons.sh`, so the swap is seamless. Changing the host? Update
+  `BRAND.logoUrl` **and** `img-src` in the manifest CSP (a test enforces this).
+* Watermarks (header, Pro card) use the transparent `assets/logo-mark.png` via
+  `--brand-mark-url`.
 * Colours live in `:root` of `styles.css` (`--pd-crimson`, `--pd-teal`, …).
-* Regenerate icons after changing the artwork: `npm run icons` (needs ImageMagick).
+* Regenerate icons / badge after changing the artwork: `npm run icons` (needs ImageMagick).
 
 ## Monetisation — Plague Doctor Pro
 

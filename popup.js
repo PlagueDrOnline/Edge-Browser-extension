@@ -31,12 +31,12 @@
   // ---------------------------------------------------------------------------
   const BRAND = Object.freeze({
     /**
-     * Remote logo (raw GitHub URL). The bundled assets/logo.png is shown until
-     * this loads; if it fails (or is still a placeholder) the bundled logo stays.
-     * For this repository the final URL will be:
-     *   https://raw.githubusercontent.com/PlagueDrOnline/Edge-Browser-extension/main/plague_logo.png
+     * Hosted logo. The bundled assets/logo.png badge is shown until this loads;
+     * if it fails the bundled badge simply stays. Its origin must be listed in
+     * the manifest CSP (img-src). Square artwork is cropped to the character via
+     * --logo-focus-x/y / --logo-zoom in styles.css.
      */
-    logoUrl: 'https://raw.githubusercontent.com/[YOUR-GITHUB-USERNAME]/[YOUR-REPO]/main/logo.png',
+    logoUrl: 'https://curedhosting.com/plague_logo.png',
 
     /** One-time payment page: Gumroad / Lemon Squeezy / Stripe Payment Link / Ko-fi shop… */
     checkoutUrl: 'https://[YOUR-STORE]/plague-doctor-pro',
@@ -717,10 +717,13 @@
       const probe = new Image();
       probe.decoding = 'async';
       probe.addEventListener('load', () => {
+        // Square artwork (the 1024×1024 original) gets the character-focused
+        // crop; anything else is shown as a plain circular badge.
+        const square = probe.naturalWidth > 0 && probe.naturalWidth === probe.naturalHeight;
+        els.brandLogo.classList.toggle('is-remote', square);
         els.brandLogo.src = BRAND.logoUrl;
-        document.documentElement.style.setProperty('--brand-logo-url', `url("${BRAND.logoUrl}")`);
       });
-      probe.src = BRAND.logoUrl; // silently keeps the bundled logo on error
+      probe.src = BRAND.logoUrl; // silently keeps the bundled badge on error
     }
   }
 

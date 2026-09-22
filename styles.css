@@ -38,11 +38,18 @@
   --pd-mono: ui-monospace, "Cascadia Code", "Consolas", "SF Mono", Menlo, monospace;
 
   /*
-   * Brand watermark. Default is the bundled logo; popup.js overrides this
-   * variable with BRAND.logoUrl once the remote image has loaded, e.g.
-   *   https://raw.githubusercontent.com/[YOUR-GITHUB-USERNAME]/[YOUR-REPO]/main/logo.png
+   * Branding.
+   *  - The header badge <img> is fed by BRAND.logoUrl in popup.js
+   *    (https://curedhosting.com/plague_logo.png) with assets/logo.png as the
+   *    bundled fallback. The remote artwork is 1024×1024 with the character on
+   *    the left; the focus/zoom values below crop it to the same circular badge
+   *    the bundled fallback was pre-rendered with (tools/make-icons.sh).
+   *  - Watermarks use the transparent mark so they never show a white square.
    */
-  --brand-logo-url: url("assets/logo.png");
+  --logo-focus-x: 38.5%;
+  --logo-focus-y: 52.7%;
+  --logo-zoom: 2.1333;
+  --brand-mark-url: url("assets/logo-mark.png");
 }
 
 /* --------------------------------------------------------------------------
@@ -133,7 +140,7 @@ kbd {
   top: -14px;
   width: 120px;
   height: 120px;
-  background: var(--brand-logo-url) center / contain no-repeat;
+  background: var(--brand-mark-url) center / contain no-repeat;
   opacity: 0.07;
   pointer-events: none;
   filter: grayscale(1);
@@ -147,12 +154,12 @@ kbd {
 }
 
 .pd-logo-frame {
+  position: relative;
   flex: none;
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
   background: radial-gradient(circle at 50% 40%, #1d222b 0%, #0d1014 75%);
   border: 1px solid var(--pd-border-strong);
   box-shadow:
@@ -161,12 +168,20 @@ kbd {
     0 0 18px -2px var(--pd-crimson-glow);
 }
 
+/* bundled badge (already cropped to the circle) */
 .pd-logo {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  transform: translateY(1px);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* hosted square artwork: zoom into the character so it matches the bundled badge */
+.pd-logo.is-remote {
+  transform-origin: var(--logo-focus-x) var(--logo-focus-y);
+  transform:
+    translate(calc(50% - var(--logo-focus-x)), calc(50% - var(--logo-focus-y)))
+    scale(var(--logo-zoom));
 }
 
 .pd-title { min-width: 0; }
@@ -611,7 +626,7 @@ details > :not(summary) { margin: 10px; }
   bottom: -40px;
   width: 170px;
   height: 170px;
-  background: var(--brand-logo-url) center / contain no-repeat;
+  background: var(--brand-mark-url) center / contain no-repeat;
   opacity: 0.05;
   pointer-events: none;
 }

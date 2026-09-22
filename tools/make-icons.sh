@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerates the extension icons + popup logo from assets/logo-master.png
+# Regenerates the extension icons + popup logo assets from assets/logo-master.png
 # (a transparent-background crop of plague_logo.png). Requires ImageMagick 6/7.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -8,8 +8,18 @@ SRC="assets/logo-master.png"
 BG="#111418"          # icon plate colour (matches --pd-bg-elev in styles.css)
 RING="#c1121f"        # crimson ring accent
 
-# Popup header logo (transparent, 256px tall)
-convert "$SRC" -resize x256 -depth 8 -strip assets/logo.png
+# Transparent mark used for the popup watermarks (256px tall)
+convert "$SRC" -resize x256 -depth 8 -strip assets/logo-mark.png
+
+# Popup header badge: the same circular crop styles.css applies to the remote
+# logo (BRAND.logoUrl), pre-rendered from the original artwork so the bundled
+# fallback and the hosted image look identical. Keep these numbers in sync with
+# --logo-focus-x / --logo-focus-y / --logo-zoom in styles.css:
+#   1024px source, 480px window centred on (394, 540)  →  zoom 1024/480, focus 38.5% / 52.7%
+ORIGINAL="plague_logo.png"
+convert "$ORIGINAL" -crop 480x480+154+300 +repage -resize 208x208 \
+  \( -size 208x208 xc:black -fill white -draw "circle 104,104 104,1" \) \
+  -alpha off -compose CopyOpacity -composite -compose Over -depth 8 -strip assets/logo.png
 
 make_icon () {
   local size="$1" out="$2"
