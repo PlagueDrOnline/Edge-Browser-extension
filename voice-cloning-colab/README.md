@@ -40,7 +40,8 @@ MyVoice/
    Run notebook 1.
 2. **Train** with notebook 2 (about 30-90 min on a T4 for the default 300 epochs). Export when it finishes.
 3. **Use it** with notebook 3:
-   - You have a song with someone else's (or a placeholder) vocal → `full_song` mode.
+   - **Replace the vocals on finished songs with yours → `full_song` mode (the default).** Put the songs in `MyVoice/tracks`.
+     Tune with the 20-second preview first (`PREVIEW_SECONDS`), mainly `PITCH_SHIFT`, then set it to 0 for the full song.
    - You sang a rough guide vocal over your instrumental → `vocal_plus_instrumental` mode, with `CONVERT_VOCALS` on.
    - You sang the final vocal yourself and just want it mixed → same mode, `CONVERT_VOCALS` off.
 
